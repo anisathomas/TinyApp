@@ -11,7 +11,9 @@
     <% for(var key in urls){ %>
 
       <form method="POST" action="/urls/9sm5xK/delete">
-         <li><%= key %> -> <a href="<%=urls[key]%>"> <%=urls[key]%></a> <button type ="delete" value="delete">Delete</button> </li>
+         <li>
+          <%= key %> -> <a href="<%=urls[key]%>"> <%=urls[key]%></a> <a href="<%=`http://localhost:8080/urls/${key}`%>" >Edit</a> <button type ="delete" value="delete">Delete</button>
+        </li>
 
       </form>
 
@@ -24,9 +26,6 @@
 
 
 </html>
-
-
-
 
 
 

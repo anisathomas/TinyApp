@@ -5,9 +5,13 @@
 </head>
 <body>
   <header><% include partials/_header %></header>
-  <h2>The full URL and its shortened form based on given id </h2>
-    <!-- Add your EJS code here -->
-    <%= longURL %> - <%= shortURL %>
+  <h2>ShortURL: <%= shortURL %></h2>
+    <!--<%= longURL %> - <%= shortURL %>-->
+
+    <form method="POST" action="/urls/<%= shortURL %>">
+      <input type="text" name="longURL">
+      <button type ="submit" value="update">Update</button>
+    </form>
 
 </body>
 </html>

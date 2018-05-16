@@ -21,17 +21,6 @@ var urlDatabase = {
   "h3298y": "http://www.youtube.com"
 };
 
-// app.get("/", (req, res) => {
-//   res.end("Hello!");
-// });
-
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// });
-
-// app.get("/hello", (req, res) => {
-//   res.end("<html><body>Hello <b>World</b></body></html>\n");
-// });
 
 app.get("/urls", (req, res) => {
   //let templateVars = { urls: urlDatabase };
@@ -73,6 +62,8 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+//Delete
+
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
   const url = urlDatabase[id];
@@ -85,6 +76,31 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 
+//Update
+
+app.post("/urls/:id", (req, res) =>{
+
+  const longURL = req.body.longURL
+  const shortURL = req.params.id;
+  urlDatabase[shortURL] =longURL;
+
+  res.redirect("/urls");
+});
+
+
+
+
+// app.get("/", (req, res) => {
+//   res.end("Hello!");
+// });
+
+// app.get("/urls.json", (req, res) => {
+//   res.json(urlDatabase);
+// });
+
+// app.get("/hello", (req, res) => {
+//   res.end("<html><body>Hello <b>World</b></body></html>\n");
+// });
 
 
 //Another way to say it is that in case of overlap, routes should be ordered from most specific to least specific.
