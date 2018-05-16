@@ -6,22 +6,24 @@
 <body>
   <!-- Add your EJS code here -->
   <header><% include partials/_header %></header>
-  <h2>URLs and their shortened forms</h2>
+  <h2>URLs and Shortened Forms</h2>
   <ul>
     <% for(var key in urls){ %>
-      <li><%= key %> - <%= urls[key] %> </li>
+
+      <form method="POST" action="/urls/9sm5xK/delete">
+         <li><%= key %> -> <a href="<%=urls[key]%>"> <%=urls[key]%></a> <button type ="delete" value="delete">Delete</button> </li>
+
+      </form>
 
      <%}%>
      <br>
-     <a href="url to go here">Click here to shorten a new URL</a>
+     <!--<a href="url to go here">Click here to shorten a new URL</a>-->
 
   </ul>
 </body>
 
 
 </html>
-
-
 
 
 

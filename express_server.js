@@ -21,17 +21,17 @@ var urlDatabase = {
   "h3298y": "http://www.youtube.com"
 };
 
-app.get("/", (req, res) => {
-  res.end("Hello!");
-});
+// app.get("/", (req, res) => {
+//   res.end("Hello!");
+// });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
+// app.get("/urls.json", (req, res) => {
+//   res.json(urlDatabase);
+// });
 
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
-});
+// app.get("/hello", (req, res) => {
+//   res.end("<html><body>Hello <b>World</b></body></html>\n");
+// });
 
 app.get("/urls", (req, res) => {
   //let templateVars = { urls: urlDatabase };
@@ -73,14 +73,16 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-//Dan's Code
-// app.post('/urls', (req, res) => {
-//   var shortURL = generateRandomString()
-//   var longURL= req.body.longURL;
-//   console.log(req.body)
-//   urlDatabase[shortURL] = longURL
-//   res.redirect('/urls')
-// });
+app.post("/urls/:id/delete", (req, res) => {
+  const id = req.params.id;
+  const url = urlDatabase[id];
+
+  if (url) {
+    delete urlDatabase[id];
+  }
+
+  res.redirect("/urls");
+});
 
 
 
