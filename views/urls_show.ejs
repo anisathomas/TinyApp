@@ -9,7 +9,7 @@
     <!--<%= longURL %> - <%= shortURL %>-->
 
     <form method="POST" action="/urls/<%= shortURL %>">
-      <input type="text" name="longURL">
+      <input type="text" name="longURL" placeholder="<%= longURL %>">
       <button type ="submit" value="update">Update</button>
     </form>
 

@@ -1,1 +1,17 @@
 This is Tiny App!
+<br>
+
+<%if (username) { %>
+<%=username%> , you are now signed in!
+<form method="POST" action="/logout">
+  <button type="Submit" value = "Logout">Log Out</button>
+</form>
+
+<% } else { %>
+Enter Username Below to Sign In:
+<form method="POST" action="/login">
+  <input type="text" name="username" placeholder="username">
+  <button type="Submit" value = "Submit">Submit</button>
+</form>
+
+<% } %>
