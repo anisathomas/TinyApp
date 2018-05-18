@@ -4,29 +4,31 @@
   <title>TinyApp</title>
 </head>
 <body>
-  <!-- Add your EJS code here -->
-  <header><% include partials/_header %></header>
-  <h2>URLs and Shortened Forms</h2>
-  <ul>
-    <% for(var key in urls){ %>
 
-      <form method="POST" action="/urls/9sm5xK/delete">
+  <header>
+    <% include partials/_header %>
+  </header>
+
+   <h2>URLs and Shortened Forms</h2>
+
+
+     <ul>
+    <% for(var key in urls) { %>
+
+      <form method="POST" action="/urls/<%= key %>/delete">
          <li>
-          <%= key %> -> <a href="<%=urls[key]%>"> <%=urls[key]%></a> <a href="<%=`http://localhost:8080/urls/${key}`%>" >Edit</a> <button type ="delete" value="delete">Delete</button>
+          <%= key %> -> <a href="<%=urls[key]%>"> <%= urls[key] %></a> <a href="<%=`http://localhost:8080/urls/${key}`%>" >Edit</a> <button type ="delete" value="delete">Delete</button>
         </li>
 
       </form>
 
-     <%}%>
+     <% } %>
      <br>
-     <!--<a href="url to go here">Click here to shorten a new URL</a>-->
+     <a href="/urls/new">Click here to shorten a new URL</a>
 
   </ul>
+
 </body>
-
-
-</html>
-
-
+</htmll>
 
 

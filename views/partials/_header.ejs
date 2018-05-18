@@ -1,17 +1,14 @@
-This is Tiny App!
-<br>
+<p>This is Tiny App!</p>
 
-<%if (username) { %>
-<%=username%> , you are now signed in!
-<form method="POST" action="/logout">
-  <button type="Submit" value = "Logout">Log Out</button>
-</form>
+<% if (locals.user) { %>
+  <%= locals.user.email %> , you are now signed in!
+  <form method="POST" action="/logout">
+    <button type="Submit" value = "Logout">Log Out</button>
+  </form>
+<% } else {%>
 
-<% } else { %>
-Enter Username Below to Sign In:
-<form method="POST" action="/login">
-  <input type="text" name="username" placeholder="username">
-  <button type="Submit" value = "Submit">Submit</button>
-</form>
+  <a href="http://localhost:8080/login"> Please Login</a>
+  <br>
+  <a href="http://localhost:8080/register">Please Register</a>
 
 <% } %>
