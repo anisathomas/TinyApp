@@ -5,13 +5,17 @@
 </head>
 <body>
   <header><% include partials/_header %></header>
-  <h2>ShortURL: <%= shortURL %></h2>
-    <!--<%= longURL %> - <%= shortURL %>-->
 
+    <!--<%= longURL %> - <%= shortURL %>-->
+    <% if (locals.user) { %>
+    <h2>ShortURL: <%= shortURL %></h2>
     <form method="POST" action="/urls/<%= shortURL %>">
       <input type="text" name="longURL" placeholder="<%= longURL %>">
       <button type ="submit" value="update">Update</button>
     </form>
+    <% } else {%>
+    <h4>Sorry, you must be signed in to update ShortURL: <%= shortURL %></h4>
+   <% } %>
 
 </body>
 </html>

@@ -17,7 +17,7 @@
 
       <form method="POST" action="/urls/<%= key %>/delete">
          <li>
-          <%= key %> -> <a href="<%=urls[key]%>"> <%= urls[key] %></a> <a href="<%=`http://localhost:8080/urls/${key}`%>" >Edit</a> <button type ="delete" value="delete">Delete</button>
+          <%= key %> -> <a href="<%=urls[key].longURL%>"> <%= urls[key].longURL %></a> <a href="<%=`http://localhost:8080/urls/${key}`%>" >Edit</a> <button type ="delete" value="delete">Delete</button>
         </li>
 
       </form>

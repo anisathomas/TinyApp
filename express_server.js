@@ -2,29 +2,37 @@ var express = require("express");
 var cookieParser = require('cookie-parser')
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
-
+const bodyParser = require("body-parser");
 app.set("view engine", "ejs");
 app.use(cookieParser());
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
+app.use(bodyParser.urlencoded({extended: true}));
 
 function generateRandomString() {
   var randomString = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
   for (var i = 0; i < 6; i++)
     randomString += possible.charAt(Math.floor(Math.random() * possible.length));
-
   return randomString;
-
 }
 
+
+
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-  "h3298y": "http://www.youtube.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "userRandomID"
+  },
+  "h3298y": {
+    longURL: "http://www.youtube.com",
+    userID: "userRandomID"
+  }
 };
 
 const users = {
@@ -44,6 +52,7 @@ const users = {
     password: "helloworld"
   }
 }
+
 
 app.get("/urls", (req, res) => {
   var user_id = req.cookies["user_id"];
@@ -71,20 +80,20 @@ app.get("/urls/:id", (req, res) => {
   var user = users[user_id];
   let templateVars = {
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     user: user
   };
   res.render("urls_show", templateVars);
 });
 
 
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
-
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString();
   var longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: req.cookies["user_id"]
+  };
   res.redirect('/urls')
 });
 
@@ -96,25 +105,29 @@ app.get("/u/:shortURL", (req, res) => {
 //Delete
 
 app.post("/urls/:id/delete", (req, res) => {
+  var user_id = req.cookies["user_id"];
+  var user = users[user_id];
   const id = req.params.id;
   const url = urlDatabase[id];
-
-  if (url) {
-    delete urlDatabase[id];
-  }
-
+  //console.log(user_id, user, id, url);
+  if (user && url && user.id === url.userID){
+  delete urlDatabase[req.params.id];
   res.redirect("/urls");
+  } else {
+    res.status(400).send("Error: You can't delete a url thats not yours!")
+
+  }
 });
 
-
 //Update
-
 app.post("/urls/:id", (req, res) =>{
-
-  const longURL = req.body.longURL
-  const shortURL = req.params.id;
+  var shortURL = req.params.id;
+  var longURL = req.body.longURL;
   urlDatabase[shortURL] =longURL;
-
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: req.cookies["user_id"]
+  };
   res.redirect("/urls");
 });
 
@@ -199,8 +212,6 @@ app.post("/register", (req,res) => {
 //   res.end("<html><body>Hello <b>World</b></body></html>\n");
 // });
 
-
-//Another way to say it is that in case of overlap, routes should be ordered from most specific to least specific.
 
 //object.key direct static key lookup
 //object[key] dynamic key lookup
