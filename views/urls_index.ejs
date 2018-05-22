@@ -11,7 +11,7 @@
 
    <h2>URLs and Shortened Forms</h2>
 
-
+  <% if (locals.user) { %>
      <ul>
     <% for(var key in urls) { %>
 
@@ -23,6 +23,7 @@
       </form>
 
      <% } %>
+     <% } %>
      <br>
      <a href="/urls/new">Click here to shorten a new URL</a>
 
@@ -30,5 +31,6 @@
 
 </body>
 </htmll>
+
 
 

@@ -1,10 +1,12 @@
 var express = require("express");
-var cookieParser = require('cookie-parser')
+//var cookieParser = require('cookie-parser')
+var cookieSession = require('cookie-session')
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
+const bcrypt = require('bcrypt');
 app.set("view engine", "ejs");
-app.use(cookieParser());
+app.use(cookieSession());
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
@@ -17,8 +19,6 @@ function generateRandomString() {
     randomString += possible.charAt(Math.floor(Math.random() * possible.length));
   return randomString;
 }
-
-
 
 var urlDatabase = {
   "b2xVn2": {
@@ -55,16 +55,35 @@ const users = {
 
 
 app.get("/urls", (req, res) => {
-  var user_id = req.cookies["user_id"];
-  var user = users[user_id];
-  let templateVars = {
-    urls: urlDatabase,
-    user: user
-    //refering to user database and the user which equals to users[user_id]
-  };
-  res.render("urls_index", templateVars);
+    var user_id = req.cookies["user_id"];
+    let userUrl = {} //new empty object
+    var user = users[user_id];
+    for (j in urlDatabase) {
+      if (urlDatabase[j].userID === user_id) {
+       userUrl[j] = urlDatabase[j];
+      }
+    }
+
+    let templateVars = {
+      urls: userUrl,
+      user: user
+      //refering to user database and the user which equals to users[user_id]
+    };
+    res.render("urls_index", templateVars);
+
 });
 
+
+
+app.post("/urls", (req, res) => {
+  var shortURL = generateRandomString();
+  var longURL = req.body.longURL;
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: req.cookies["user_id"]
+  };
+  res.redirect('/urls')
+});
 
 app.get("/urls/new", (req, res) => {
   var user_id = req.cookies["user_id"];
@@ -78,27 +97,27 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   var user_id = req.cookies["user_id"];
   var user = users[user_id];
+  const id = req.params.id;
+  const url = urlDatabase[id];
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
     user: user
   };
+  if (user && url && user.id === url.userID){
   res.render("urls_show", templateVars);
+  } else {
+    res.status(400).send("Error: You can't edit a url thats not yours!")
+  }
+
 });
 
 
-app.post("/urls", (req, res) => {
-  var shortURL = generateRandomString();
-  var longURL = req.body.longURL;
-  urlDatabase[shortURL] = {
-    longURL: longURL,
-    userID: req.cookies["user_id"]
-  };
-  res.redirect('/urls')
-});
+
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].longURL;
+
   res.redirect(longURL);
 });
 
@@ -123,30 +142,26 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id", (req, res) =>{
   var shortURL = req.params.id;
   var longURL = req.body.longURL;
-  urlDatabase[shortURL] =longURL;
   urlDatabase[shortURL] = {
     longURL: longURL,
     userID: req.cookies["user_id"]
   };
   res.redirect("/urls");
+
 });
 
 //the Login route
 
 app.post("/login", (req, res) => {
-
   for (i in users){
-
-    if(req.body.email === users[i].email && req.body.password === users[i].password){
+    if (req.body.email === users[i].email && users[i].hashedPassword && bcrypt.compareSync(req.body.password, users[i].hashedPassword)) {
       res.cookie("user_id", i);
       res.redirect("/urls");
-      return
     }
   }
-  //console.log("wrong email or password");
   res.status(403).send("Error: Email or Password is incorrect")
-
 });
+
 
 app.get("/login", (req, res) => {
   res.render("urls_login");
@@ -182,21 +197,12 @@ app.post("/register", (req,res) => {
   users[randomID] = {
     id : randomID,
     email : req.body.email,
-    password : req.body.password
+    hashedPassword : bcrypt.hashSync(req.body.password, 10)
   }
-
+  //console.log(users[randomID].hashedPassword);
   res.cookie("user_id", randomID);
   res.redirect("/urls");
 });
-
-
-
-
-
-
-// Change your templateVars (multiple endpoints)
-// to pass in a user (object) property instead of the
-// previously implemented username (string) property.
 
 
 
@@ -211,6 +217,8 @@ app.post("/register", (req,res) => {
 // app.get("/hello", (req, res) => {
 //   res.end("<html><body>Hello <b>World</b></body></html>\n");
 // });
+
+
 
 
 //object.key direct static key lookup
