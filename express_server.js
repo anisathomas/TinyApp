@@ -6,7 +6,14 @@ var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 app.set("view engine", "ejs");
-app.use(cookieSession());
+app.use(cookieSession({
+
+name: "session",
+keys: ["dgs"] //secret key
+
+
+}
+  ));
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
@@ -55,7 +62,7 @@ const users = {
 
 
 app.get("/urls", (req, res) => {
-    var user_id = req.cookies["user_id"];
+    var user_id = req.session["user_id"];
     let userUrl = {} //new empty object
     var user = users[user_id];
     for (j in urlDatabase) {
@@ -80,13 +87,13 @@ app.post("/urls", (req, res) => {
   var longURL = req.body.longURL;
   urlDatabase[shortURL] = {
     longURL: longURL,
-    userID: req.cookies["user_id"]
+    userID: req.session["user_id"]
   };
   res.redirect('/urls')
 });
 
 app.get("/urls/new", (req, res) => {
-  var user_id = req.cookies["user_id"];
+  var user_id = req.session["user_id"];
   var user = users[user_id];
   let templateVars = {
     user: user
@@ -95,7 +102,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  var user_id = req.cookies["user_id"];
+  var user_id = req.session["user_id"];
   var user = users[user_id];
   const id = req.params.id;
   const url = urlDatabase[id];
@@ -124,7 +131,7 @@ app.get("/u/:shortURL", (req, res) => {
 //Delete
 
 app.post("/urls/:id/delete", (req, res) => {
-  var user_id = req.cookies["user_id"];
+  var user_id = req.session["user_id"];
   var user = users[user_id];
   const id = req.params.id;
   const url = urlDatabase[id];
@@ -144,7 +151,7 @@ app.post("/urls/:id", (req, res) =>{
   var longURL = req.body.longURL;
   urlDatabase[shortURL] = {
     longURL: longURL,
-    userID: req.cookies["user_id"]
+    userID: req.session.user_id
   };
   res.redirect("/urls");
 
@@ -155,7 +162,7 @@ app.post("/urls/:id", (req, res) =>{
 app.post("/login", (req, res) => {
   for (i in users){
     if (req.body.email === users[i].email && users[i].hashedPassword && bcrypt.compareSync(req.body.password, users[i].hashedPassword)) {
-      res.cookie("user_id", i);
+      req.session.user_id = i;
       res.redirect("/urls");
     }
   }
@@ -170,7 +177,7 @@ app.get("/login", (req, res) => {
 //the Logout Route
 app.post("/logout", (req, res) => {
   //res.clearCookie('name', { path: '/admin' });
-  res.clearCookie("user_id");
+  req.session = null;
 
   res.redirect("/urls");
 });
@@ -200,7 +207,7 @@ app.post("/register", (req,res) => {
     hashedPassword : bcrypt.hashSync(req.body.password, 10)
   }
   //console.log(users[randomID].hashedPassword);
-  res.cookie("user_id", randomID);
+  req.session.user_id = randomID;
   res.redirect("/urls");
 });
 
