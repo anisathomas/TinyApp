@@ -1,15 +1,14 @@
 var express = require("express");
-//var cookieParser = require('cookie-parser')
 var cookieSession = require('cookie-session')
 var app = express();
-var PORT = process.env.PORT || 8080; // default port 8080
+var PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 app.set("view engine", "ejs");
 app.use(cookieSession({
 
-name: "session",
-keys: ["dgs"] //secret key
+  name: "session",
+  keys: ["dgs"] //secret key
 
 
 }
@@ -62,7 +61,7 @@ const users = {
 
 
 app.get("/urls", (req, res) => {
-    var user_id = req.session["user_id"];
+  var user_id = req.session["user_id"];
     let userUrl = {} //new empty object
     var user = users[user_id];
     for (j in urlDatabase) {
@@ -71,12 +70,12 @@ app.get("/urls", (req, res) => {
       }
     }
 
-    let templateVars = {
+  let templateVars = {
       urls: userUrl,
       user: user
       //refering to user database and the user which equals to users[user_id]
-    };
-    res.render("urls_index", templateVars);
+  };
+  res.render("urls_index", templateVars);
 
 });
 
@@ -124,7 +123,6 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL].longURL;
-
   res.redirect(longURL);
 });
 
@@ -135,13 +133,11 @@ app.post("/urls/:id/delete", (req, res) => {
   var user = users[user_id];
   const id = req.params.id;
   const url = urlDatabase[id];
-  //console.log(user_id, user, id, url);
   if (user && url && user.id === url.userID){
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
   } else {
     res.status(400).send("Error: You can't delete a url thats not yours!")
-
   }
 });
 
@@ -169,23 +165,20 @@ app.post("/login", (req, res) => {
   res.status(403).send("Error: Email or Password is incorrect")
 });
 
+///THE LOG OUT ROUTE///
 
 app.get("/login", (req, res) => {
   res.render("urls_login");
 })
 
-//the Logout Route
 app.post("/logout", (req, res) => {
-  //res.clearCookie('name', { path: '/admin' });
   req.session = null;
-
   res.redirect("/urls");
 });
 
-//registration page
+///REGISTRATION///
 app.get("/register", (req, res) => {
   res.render("urls_registration");
-
 });
 
 
@@ -206,27 +199,7 @@ app.post("/register", (req,res) => {
     email : req.body.email,
     hashedPassword : bcrypt.hashSync(req.body.password, 10)
   }
-  //console.log(users[randomID].hashedPassword);
   req.session.user_id = randomID;
   res.redirect("/urls");
 });
 
-
-
-// app.get("/", (req, res) => {
-//   res.end("Hello!");
-// });
-
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// });
-
-// app.get("/hello", (req, res) => {
-//   res.end("<html><body>Hello <b>World</b></body></html>\n");
-// });
-
-
-
-
-//object.key direct static key lookup
-//object[key] dynamic key lookup
