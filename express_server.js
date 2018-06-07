@@ -1,3 +1,8 @@
+
+//Any email (including blank!) can be accepted for login,
+//whether or not it has been registered into the database.
+
+
 var express = require("express");
 var cookieSession = require('cookie-session')
 var app = express();
@@ -154,16 +159,21 @@ app.post("/urls/:id", (req, res) =>{
 });
 
 //the Login route
-
 app.post("/login", (req, res) => {
-  for (i in users){
-    if (req.body.email === users[i].email && users[i].hashedPassword && bcrypt.compareSync(req.body.password, users[i].hashedPassword)) {
-      req.session.user_id = i;
-      res.redirect("/urls");
+  if (req.body.email === "" || req.body.password === "") {
+    res.status(403).send("Error: Email or Password is empty")
+  } else {
+    for (i in users){
+      if (req.body.email === users[i].email && users[i].hashedPassword && bcrypt.compareSync(req.body.password, users[i].hashedPassword)) {
+        req.session.user_id = i;
+        res.redirect("/urls");
+        return;
+      }
     }
+    res.status(403).send("Error: Email or Password is incorrect")
   }
-  res.status(403).send("Error: Email or Password is incorrect")
 });
+
 
 ///THE LOG OUT ROUTE///
 
